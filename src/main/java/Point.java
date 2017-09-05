@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * Created by lpug on 25/08/2017.
  */
-public class Point implements Comparable<Point> {
+public final class Point implements Comparable<Point> {
     private final int x;     // x-coordinate of this point
     private final int y;     // y-coordinate of this point
 
@@ -22,20 +22,12 @@ public class Point implements Comparable<Point> {
         this.y = y;
     }
 
-    private int getX() {
-        return x;
-    }
-
-    private int getY() {
-        return y;
-    }
-
     /**
      * Draws this point to standard draw.
      */
     public void draw() {
         /* DO NOT MODIFY */
-        StdDraw.point(getX(), getY());
+        StdDraw.point(this.x, this.y);
     }
 
     /**
@@ -46,7 +38,7 @@ public class Point implements Comparable<Point> {
      */
     public void drawTo(Point that) {
         /* DO NOT MODIFY */
-        StdDraw.line(this.getX(), this.getY(), that.getX(), that.getY());
+        StdDraw.line(this.x, this.y, that.x, that.y);
     }
 
     /**
@@ -62,8 +54,8 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
-        double deltaY = that.getY() - this.getY();
-        double deltaX = that.getX() - this.getX();
+        double deltaY = that.y - this.y;
+        double deltaX = that.x - this.x;
         double slope;
 
         if (deltaX == 0 && deltaY == 0)
@@ -71,7 +63,7 @@ public class Point implements Comparable<Point> {
         else if (deltaX == 0)
             slope = Double.POSITIVE_INFINITY;
         else if (deltaY == 0)
-            slope = 0.0f;
+            slope = 0.0;
         else
             slope =  deltaY / deltaX;
 
@@ -93,14 +85,14 @@ public class Point implements Comparable<Point> {
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
         int result;
-        if (this.getY() > that.getY())
+        if (this.y > that.y)
             result = 1;
-        else if (this.getY() < that.getY())
+        else if (this.y < that.y)
             result = -1;
         else {
-            if (this.getX() > that.getX())
+            if (this.x > that.x)
                 result = 1;
-            else if (this.getX() < that.getX())
+            else if (this.x < that.x)
                 result = -1;
             else
                 result = 0;
@@ -117,7 +109,7 @@ public class Point implements Comparable<Point> {
      *
      * @return the Comparator that defines this ordering on points
      */
-    private class PointComparator implements Comparator<Point> {
+    private final class PointComparator implements Comparator<Point> {
         /* YOUR CODE HERE */
         public int compare(Point aPoint, Point bPoint) {
             // aPoint.equals(bPoint);
@@ -147,7 +139,7 @@ public class Point implements Comparable<Point> {
      */
     public String toString() {
         /* DO NOT MODIFY */
-        return "(" + getX() + ", " + getY() + ")";
+        return "(" + this.x + ", " + this.y + ")";
     }
 
     /**

@@ -7,24 +7,26 @@ import java.util.Arrays;
 /**
  * Created by lpug on 29/08/2017.
  */
-public class FastCollinearPoints {
+public final class FastCollinearPoints {
     private final LineSegment[] lineSegments;
-
+    private Point[] points;
     public FastCollinearPoints(Point[] points) {
         if (points == null)
             throw new IllegalArgumentException();
 
-        if(hasNullPoint(points))
+        this.points = points;
+
+        if (hasNullPoint())
             throw new IllegalArgumentException();
 
-        if(hasDuplicatePoints(points))
+        if (hasDuplicatePoints())
             throw new IllegalArgumentException();
 
-        lineSegments = getSegments(points);
+        lineSegments = getSegments();
     }
 
 
-    private boolean hasNullPoint(Point[] points) {
+    private boolean hasNullPoint() {
         for (int i = 0; i < points.length; i++) {
             if (points[i] == null) {
                 return true;
@@ -33,19 +35,19 @@ public class FastCollinearPoints {
         return false;
     }
 
-    private boolean hasDuplicatePoints(Point[] points) {
+    private boolean hasDuplicatePoints() {
         Arrays.sort(points);
-        for (int i = 0; i < points.length-1; i++) {
-            if(points[i] == null || points[i+1] == null)
+        for (int i = 0; i < points.length - 1; i++) {
+            if (points[i] == null || points[i + 1] == null)
                 return true;
-            else if (points[i].compareTo(points[i+1]) == 0) {
+            else if (points[i].compareTo(points[i + 1]) == 0) {
                 return true;
             }
         }
         return false;
     }
 
-    private LineSegment[] getSegments(Point[] points) {
+    private LineSegment[] getSegments() {
         Point[][] lineSegments = new Point[points.length][2];
         int lineSegmentAmount = 0;
         Point[] copiedPoints = Arrays.copyOf(points, points.length);
@@ -102,11 +104,11 @@ public class FastCollinearPoints {
     }
 
     public int numberOfSegments() {
-        return this.lineSegments.length;
+        return lineSegments.length;
     }
 
     public LineSegment[] segments() {
-        return this.lineSegments;
+        return lineSegments;
     }
 
 

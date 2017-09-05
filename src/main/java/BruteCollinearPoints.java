@@ -9,44 +9,46 @@ import java.util.List;
 /**
  * Created by lpug on 26/08/2017.
  */
-public class BruteCollinearPoints {
+public final class BruteCollinearPoints {
     private final LineSegment[] lineSegments;
+    private Point[] points;
 
     public BruteCollinearPoints(Point[] points) {
         if (points == null)
             throw new IllegalArgumentException();
 
-        if(hasNullPoint(points))
+        this.points = points;
+        if (hasNullPoint())
             throw new IllegalArgumentException();
 
-        if(hasDuplicatePoints(points))
+        if (hasDuplicatePoints())
             throw new IllegalArgumentException();
 
-        lineSegments = getSegments(points);
+
+        lineSegments = getSegments();
 
     }
 
-    private boolean hasNullPoint(Point[] points) {
+    private boolean hasNullPoint() {
         for (int i = 0; i < points.length; i++) {
-           if (points[i] == null) {
+            if (points[i] == null) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean hasDuplicatePoints(Point[] points) {
+    private boolean hasDuplicatePoints() {
         Arrays.sort(points);
-        for (int i = 0; i < points.length-1; i++) {
-            if (points[i].compareTo(points[i+1]) == 0) {
+        for (int i = 0; i < points.length - 1; i++) {
+            if (points[i].compareTo(points[i + 1]) == 0) {
                 return true;
             }
         }
         return false;
     }
 
-    private LineSegment[] getSegments(Point[] points)
-    {
+    private LineSegment[] getSegments() {
         int count = 0;
         List<LineSegment> lineSegments = new ArrayList<LineSegment>();
         Arrays.sort(points);
@@ -79,16 +81,16 @@ public class BruteCollinearPoints {
 
         LineSegment[] result = lineSegments.toArray(new LineSegment[count]);
 
-        return  result;
+        return result;
     }
 
 
     public int numberOfSegments() {
-        return this.lineSegments.length;
+        return lineSegments.length;
     }
 
     public LineSegment[] segments() {
-        return this.lineSegments;
+        return lineSegments;
     }
 
     public static void main(String[] args) {
