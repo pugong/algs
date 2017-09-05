@@ -2,16 +2,86 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
-import javax.naming.directory.SearchResult;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Stack;
 
 /**
  * Created by lpug on 31/08/2017.
  */
 public class Solver {
+    private int moves;
+    private Iterable<Board> solution;
+    private boolean isSolvable;
+
+    private static final Comparator<SearchNode> SEARCH_NODE_COMPARATOR = new Comparator<SearchNode>() {
+        public int compare(SearchNode searchNode, SearchNode searchNodeSecond) {
+            int manhattanPriorityFirst = searchNode.getManhattanPriority();
+            int manhattanPrioritySecond = searchNodeSecond.getManhattanPriority();
+//            if (manhattanPriorityFirst == manhattanPrioritySecond) {
+//                return searchNode.getHammingPriority() - searchNodeSecond.getHammingPriority();
+//            } else {
+                return manhattanPriorityFirst - manhattanPrioritySecond;
+//            }
+        }
+    };
+
+
+    public Solver(Board initial) {
+        this(initial, SEARCH_NODE_COMPARATOR);
+    }
+
+    private Solver(Board initial, Comparator<SearchNode> comp) {
+        if (initial == null)
+            throw new IllegalArgumentException();
+
+        MinPQ<SearchNode> minPQ = new MinPQ<SearchNode>(comp);
+        MinPQ<SearchNode> twinMinPQ = new MinPQ<SearchNode>(comp);
+        minPQ.insert(new SearchNode(initial, 0, null));
+        twinMinPQ.insert(new SearchNode(initial.twin(), 0, null));
+
+        while (!minPQ.isEmpty() && !twinMinPQ.isEmpty()) {
+            SearchNode currNode = minPQ.delMin();
+            SearchNode twinCurrNode = twinMinPQ.delMin();
+
+            if (currNode.board.isGoal()) {
+                solution = currNode.solution();
+                moves = currNode.moves;
+                isSolvable = true;
+                break;
+            } else if (twinCurrNode.board.isGoal()) {
+                solution = null;
+                moves = -1;
+                isSolvable = false;
+                break;
+            } else {
+                for (Board board : currNode.board.neighbors()) {
+                    if (currNode.prev == null ||
+                            !board.equals(currNode.prev.board)) {
+                        minPQ.insert(new SearchNode(board, currNode.moves + 1, currNode));
+                    }
+                }
+                for (Board board : twinCurrNode.board.neighbors()) {
+                    if (twinCurrNode.prev == null ||
+                            !board.equals(twinCurrNode.prev.board)) {
+                        twinMinPQ.insert(new SearchNode(board, twinCurrNode.moves + 1, twinCurrNode));
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isSolvable() {
+        return isSolvable;
+    }
+
+    public int moves() {
+        return moves;
+    }
+
+    public Iterable<Board> solution() {
+        return solution;
+    }
+
     private static final class SearchNode {
         private Board board;
         private int moves;
@@ -45,99 +115,15 @@ public class Solver {
             return this.manhattan + moves;
         }
 
-        private Iterable<Board> pathToThis() {
-            Stack<Board> path = new Stack<Board>();
-            SearchNode ptr = this;
-            while (ptr != null) {
-                path.push(ptr.board);
-                ptr = ptr.prev;
+        private Iterable<Board> solution() {
+            Stack<Board> solution = new Stack<Board>();
+            SearchNode searchNode = this;
+            while (searchNode != null) {
+                solution.push(searchNode.board);
+                searchNode = searchNode.prev;
             }
-            return path;
+            return solution;
         }
-    }
-
-    private int moves;
-
-    private static final Comparator<SearchNode> HAMMINGCOMP = new Comparator<SearchNode>() {
-        @Override
-        public int compare(SearchNode o1, SearchNode o2) {
-            return o1.getHammingPriority() - o2.getHammingPriority();
-        }
-    };
-
-    private static final Comparator<SearchNode> MANHATTANCOMP = new Comparator<SearchNode>() {
-        @Override
-        public int compare(SearchNode o1, SearchNode o2) {
-            return o1.getManhattanPriority() - o2.getManhattanPriority();
-        }
-    };
-
-    private static final Comparator<SearchNode> COMP = new Comparator<SearchNode>() {
-        @Override
-        public int compare(SearchNode o1, SearchNode o2) {
-            int m1 = o1.getManhattanPriority();
-            int m2 = o2.getManhattanPriority();
-            if (m1 == m2) {
-                return o1.getHammingPriority() - o2.getHammingPriority();
-            } else {
-                return m1 - m2;
-            }
-        }
-    };
-
-    private Iterable<Board> path;
-
-    public Solver(Board initial) {           // find a solution to the initial board (using the A* algorithm)
-        this(initial, COMP);
-    }
-
-    private Solver(Board initial, Comparator<SearchNode> comp) {
-        if (initial == null) throw new NullPointerException();
-
-        MinPQ<SearchNode> pq = new MinPQ<SearchNode>(comp);
-        MinPQ<SearchNode> alterPQ = new MinPQ<SearchNode>(comp);
-        pq.insert(new SearchNode(initial, 0, null));
-        alterPQ.insert(new SearchNode(initial.twin(), 0, null));
-
-        while (!pq.isEmpty() && !alterPQ.isEmpty()) {
-            SearchNode currNode = pq.delMin();
-            SearchNode alterCurrNode = alterPQ.delMin();
-
-            if (currNode.board.isGoal()) {
-                path = currNode.pathToThis();
-                moves = currNode.moves;
-                break;
-            } else if (alterCurrNode.board.isGoal()) {
-                path = null;
-                moves = -1;
-                break;
-            } else {
-                for (Board b : currNode.board.neighbors()) {
-                    if (currNode.prev == null ||
-                            !b.equals(currNode.prev.board)) {
-                        pq.insert(new SearchNode(b, currNode.moves + 1, currNode));
-                    }
-                }
-                for (Board b : alterCurrNode.board.neighbors()) {
-                    if (alterCurrNode.prev == null ||
-                            !b.equals(alterCurrNode.prev.board)) {
-                        alterPQ.insert(new SearchNode(b, alterCurrNode.moves + 1, alterCurrNode));
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean isSolvable() {            // is the initial board solvable?
-        return moves != -1;
-    }
-
-    public int moves() {                     // min number of moves to solve initial board; -1 if unsolvable
-        return moves;
-    }
-
-    public Iterable<Board> solution() {      // sequence of boards in a shortest solution; null if unsolvable
-        return path;
     }
 
     public static void main(String[] args) {
@@ -161,6 +147,7 @@ public class Solver {
             for (Board board : solver.solution())
                 StdOut.println(board);
         }
+
     }
 
 

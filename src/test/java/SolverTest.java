@@ -21,12 +21,31 @@ public class SolverTest {
 
     @Test
     public void testIsSolvable() throws Exception {
+        int[][] a = new int[][]{{0, 1, 3}, {4, 2, 5}, {7, 8, 6}};
+        int[][] b = new int[][]{{1, 2, 3}, {4, 6, 5}, {7, 8, 0}};
 
+        Board boardFirst = new Board(a);
+        Board boardSecond = new Board(b);
+        Solver solverFirst = new Solver(boardFirst);
+        Solver solverSecond = new Solver(boardSecond);
+
+        assert (solverFirst.isSolvable());
+        assert(!solverSecond.isSolvable());
     }
 
     @Test
     public void testMoves() throws Exception {
 
+        int[][] a = new int[][]{{0, 1, 3}, {4, 2, 5}, {7, 8, 6}};
+        int[][] b = new int[][]{{1, 2, 3}, {4, 6, 5}, {7, 8, 0}};
+
+        Board boardFirst = new Board(a);
+        Board boardSecond = new Board(b);
+        Solver solverFirst = new Solver(boardFirst);
+        Solver solverSecond = new Solver(boardSecond);
+
+        assert (solverFirst.moves() == 4);
+        assert (solverSecond.moves() == -1);
     }
 
     @Test

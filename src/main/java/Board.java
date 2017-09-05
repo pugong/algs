@@ -1,5 +1,3 @@
-import edu.princeton.cs.algs4.StdRandom;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,66 +5,58 @@ import java.util.List;
  * Created by lpug on 31/08/2017.
  */
 public final class Board {
+    private int blankIndex;
     private final int[] blockArray;
     private final int boardDimension;
-    private final int blankIndex;
+    private final int hamming;
+    private final int manhattan;
 
     public Board(int[][] blocks) {
-        if (blocks == null || blocks.length == 0)
+        if (blocks == null || blocks.length == 0 || blocks[0].length == 0)
             throw new IllegalArgumentException();
 
         boardDimension = blocks.length;
 
-        blockArray = new int[boardDimension * boardDimension];
-
-        int zeroIndex = 0;
+        this.blockArray = new int[boardDimension * boardDimension];
         int i = 0;
         for (int[] block : blocks) {
             for (int point : block) {
-                blockArray[i] = point;
-                if (point == 0)
-                    zeroIndex = i;
+                this.blockArray[i] = point;
+                if (point == 0) {
+                    blankIndex = i;
+                }
                 i++;
             }
         }
-        blankIndex = zeroIndex;
+
+        this.manhattan =getManhattan();
+        this.hamming = getHamming();
     }
 
-    private Board(int[] points, int boardDimension) {
-        this.blockArray = points;
+    private Board(int[] blockArray, int boardDimension) {
+        this.blockArray = blockArray;
         this.boardDimension = boardDimension;
-        int zeroIndex = 0;
-        for (int i = 0; i < points.length; i++) {
-            if (points[i] == 0) {
-                zeroIndex = i;
+        for (int i = 0; i < blockArray.length; i++) {
+            if (blockArray[i] == 0) {
+                blankIndex = i;
                 break;
             }
         }
-        blankIndex = zeroIndex;
+        this.manhattan =getManhattan();
+        this.hamming = getHamming();
     }
 
-    public int dimension() {
-        return boardDimension;
-    }
-
-    /* Hamming priority function. The number of blocks in the wrong position,
-         plus the number of moves made so far to get to the search node.
-         Intuitively, a search node with a small number of blocks in the wrong
-         position is close to the goal, and we prefer a search node that have been
-         reached using a small number of moves.*/
-    public int hamming() {
+    private int getHamming() {
         int distance = 0;
         for (int i = 0; i < blockArray.length; i++) {
-            if (blockArray[i] != 0 && blockArray[i] != i + 1)
+            if (blockArray[i] != 0 && blockArray[i] != i + 1) {
                 distance++;
+            }
         }
         return distance;
     }
 
-    /* Manhattan priority function. The sum of the Manhattan distances
-        (sum of the vertical and horizontal distance) from the blocks to their goal
-        positions, plus the number of moves made so far to get to the search node.*/
-    public int manhattan() {
+    private int getManhattan() {
         int distance = 0;
         for (int i = 0; i < blockArray.length; i++) {
             if (blockArray[i] != 0 && blockArray[i] != i + 1) {
@@ -80,38 +70,54 @@ public final class Board {
         return distance;
     }
 
+    public int dimension() {
+        return boardDimension;
+    }
+
+    public int hamming() {
+        return hamming;
+    }
+
+    public int manhattan() {
+        return manhattan;
+    }
+
     public boolean isGoal() {
         if (blockArray[blockArray.length - 1] != 0) return false;
-        for (int i = 0; i < blockArray.length - 1; i++) {
-            if (blockArray[i] != i + 1)
-                return false;
+        else {
+            for (int i = 0; i < blockArray.length - 1; i++) {
+                if (blockArray[i] != i + 1) {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        return true;
     }
 
-    // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
-        int oriRow = StdRandom.uniform(boardDimension);
-        int oriCol = StdRandom.uniform(boardDimension - 1);
+        for (int row = 0; row < boardDimension; row++) {
+            for (int col = 0; col < boardDimension - 1; col++) {
+                if (blockArray[row * boardDimension + col] != 0 && blockArray[row * boardDimension + col + 1] != 0) {
+                    int oriIndex = row * boardDimension + col;
+                    int destIndex = row * boardDimension + col + 1;
+                    return getExchangePairedBoard(oriIndex, destIndex);
+                }
+            }
+        }
 
-        int intOriIndex = oriRow * boardDimension + oriCol;
-        if (blockArray[intOriIndex] != 0 && blockArray[intOriIndex + 1] != 0)
-            return ExchangeBlocksPair(intOriIndex, intOriIndex + 1);
-        else
-            return twin();
-
+        return this;
     }
 
-    private Board ExchangeBlocksPair(int firstIndex, int secondIndex) {
-        int[] copyArray = blockArray.clone();
-        int t = copyArray[firstIndex];
-        copyArray[firstIndex] = copyArray[secondIndex];
-        copyArray[secondIndex] = t;
-        return new Board(copyArray, boardDimension);
+    private Board getExchangePairedBoard(int oriIndex, int destIndex) {
+        int[] newData = new int[blockArray.length];
+        System.arraycopy(blockArray, 0, newData, 0, blockArray.length);
+        int temp = newData[oriIndex];
+        newData[oriIndex] = newData[destIndex];
+        newData[destIndex] = temp;
+        return new Board(newData, boardDimension);
     }
 
-    // does this board equal y?
     public boolean equals(Object y) {
         if (y == this) return true;
 
@@ -120,40 +126,33 @@ public final class Board {
         }
 
         Board yy = (Board) y;
-
-        if (yy.boardDimension != this.boardDimension)
-            return false;
-
         if (blockArray.length != yy.blockArray.length)
             return false;
 
         for (int i = 0; i < blockArray.length; i++) {
-            if (blockArray[i] != yy.blockArray[i]) {
+            try {
+                if (blockArray[i] != yy.blockArray[i]) {
+                    return false;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
                 return false;
             }
         }
-
         return true;
     }
 
-
-    // all neighboring boards
     public Iterable<Board> neighbors() {
-        List<Board> neighbors = new ArrayList<Board>();
-        for (int row = 0; row < boardDimension; row++)
-            for (int col = 0; col < boardDimension - 1; col++) {
-                int oriIndex = row * dimension() + col;
-
-                if (blockArray[oriIndex] != 0 && blockArray[oriIndex + 1] != 0)
-                    neighbors.add(ExchangeBlocksPair(oriIndex, oriIndex + 1));
-
-                // try to swap up/down (the meaning row and col switched)
-                int upIndex = col * dimension() + row;
-                int downIndex = (col + 1) * dimension() + row;
-                if (blockArray[upIndex] != 0 && blockArray[downIndex] != 0)
-                    neighbors.add(ExchangeBlocksPair(upIndex, downIndex));
+        List<Board> neighbors = new ArrayList<Board>(4);
+        int blankRow = blankIndex / boardDimension;
+        int blandCol = blankIndex % boardDimension;
+        for (int[] d : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
+            int row = blankRow + d[0];
+            int col = blandCol + d[1];
+            if (0 <= row && row < boardDimension &&
+                    0 <= col && col < boardDimension) {
+                neighbors.add(getExchangePairedBoard(blankIndex, row * boardDimension + col));
             }
-
+        }
         return neighbors;
     }
 
@@ -163,9 +162,9 @@ public final class Board {
         sb.append("\n");
         for (int i = 0; i < boardDimension; i++) {
             for (int j = 0; j < boardDimension; j++) {
-                sb.append(" ");
-                sb.append(blockArray[i * boardDimension + j]);
-                sb.append(" ");
+//                sb.append(" ");
+                sb.append(String.format("%2d ",blockArray[i * boardDimension + j]));
+//                sb.append(" ");
             }
             sb.append("\n");
         }
@@ -177,18 +176,13 @@ public final class Board {
 //        int[][] c = new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
 
         Board board = new Board(b);
-//        String target = board.toString();
         System.out.println(board.toString());
-//        System.out.println(board.toString().equals(target));
         System.out.println(board.manhattan());
         System.out.println(board.hamming());
         System.out.println(board.isGoal());
         Board twin = board.twin();
         System.out.print(twin.toString());
 
-//        for (Board indv : board.neighbors()) {
-//            System.out.print(indv.toString());
-//        }
 
     }
 }
