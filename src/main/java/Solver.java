@@ -15,13 +15,7 @@ public class Solver {
 
     private static final Comparator<SearchNode> SEARCH_NODE_COMPARATOR = new Comparator<SearchNode>() {
         public int compare(SearchNode searchNode, SearchNode searchNodeSecond) {
-            int manhattanPriorityFirst = searchNode.getManhattanPriority();
-            int manhattanPrioritySecond = searchNodeSecond.getManhattanPriority();
-//            if (manhattanPriorityFirst == manhattanPrioritySecond) {
-//                return searchNode.getHammingPriority() - searchNodeSecond.getHammingPriority();
-//            } else {
-                return manhattanPriorityFirst - manhattanPrioritySecond;
-//            }
+            return searchNode.getManhattanPriority() - searchNodeSecond.getManhattanPriority();
         }
     };
 

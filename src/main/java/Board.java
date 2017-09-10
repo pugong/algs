@@ -29,7 +29,7 @@ public final class Board {
             }
         }
 
-        this.manhattan =getManhattan();
+        this.manhattan = getManhattan();
         this.hamming = getHamming();
     }
 
@@ -42,7 +42,7 @@ public final class Board {
                 break;
             }
         }
-        this.manhattan =getManhattan();
+        this.manhattan = getManhattan();
         this.hamming = getHamming();
     }
 
@@ -163,7 +163,7 @@ public final class Board {
         for (int i = 0; i < boardDimension; i++) {
             for (int j = 0; j < boardDimension; j++) {
 //                sb.append(" ");
-                sb.append(String.format("%2d ",blockArray[i * boardDimension + j]));
+                sb.append(String.format("%2d ", blockArray[i * boardDimension + j]));
 //                sb.append(" ");
             }
             sb.append("\n");
