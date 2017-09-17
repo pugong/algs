@@ -1,7 +1,5 @@
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by lpug on 06/09/2017.
  */

@@ -1,8 +1,7 @@
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.In;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -199,7 +198,7 @@ public class KdTree {
         if (node == null)
             return points;
 
-        if (rect.contains(node.p)) {
+        if (rect.distanceSquaredTo(node.p) == 0) {
             points.add(node.p);
         }
 

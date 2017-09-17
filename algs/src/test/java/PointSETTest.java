@@ -1,9 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by lpug on 05/09/2017.
