@@ -1,3 +1,5 @@
+package org.yunxin.leetCodeDemo;
+
 /**
  * Created by lpug on 11/09/2017.
  */

@@ -1,9 +1,11 @@
+package org.yunxin.leetCodeDemo;
+
 import org.junit.Test;
 
 /**
  * Created by lpug on 15/09/2017.
  */
-public class LeetCodeTest {
+public class AtoiConverterTest {
 
     @Test
     public void testMyAtoi() throws Exception {

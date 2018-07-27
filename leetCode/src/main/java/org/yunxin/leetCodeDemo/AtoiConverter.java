@@ -1,7 +1,9 @@
+package org.yunxin.leetCodeDemo;
+
 /**
  * Created by lpug on 15/09/2017.
  */
-public class LeetCode {
+public class AtoiConverter {
 
     /*
     Implement atoi to convert a string to an integer.
