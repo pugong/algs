@@ -17,7 +17,7 @@ public class AtoiConverter {
 
      */
     public int myAtoi(String str) {
-        if (str == null || str.isEmpty())
+        if (str == null || str.isEmpty() || str.trim().isEmpty())
             return 0;
         boolean negative = false;
         int result = 0;
@@ -27,23 +27,37 @@ public class AtoiConverter {
             negative = true;
         else if (firstChar == '+')
             negative = false;
-        else
+        else {
             result = Character.getNumericValue(firstChar);
+            if(result > 9 || result < 0)
+                return 0;
+        }
 
         for (int i = 1; i < str.length(); i++) {
             char c = str.charAt(i);
             if (c == '-'|| c == '+')
-                return 0;
+                break;
 
             if (c < 0)
-                return 0;
+                break;
 
             int temp = Character.getNumericValue(c);
-            if(temp > 10 || temp < 0)
-                return 0;
+            if(temp > 9 || temp < 0)
+                break;
 
-            result *= 10;
-            result += temp;
+            if(result <= Integer.MAX_VALUE / 10) {
+                result *= 10;
+                if(result <= Integer.MAX_VALUE - temp)
+                    result += temp;
+                else {
+                    result = negative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+                    break;
+                }
+            }
+            else {
+                result = negative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+                break;
+            }
         }
 
         return negative ? -result : result;
