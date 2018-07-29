@@ -1,3 +1,5 @@
+package org.yunxin.leetCodeDemo;
+
 import org.junit.Test;
 
 /**
@@ -17,6 +19,6 @@ public class ReverseStringTest {
 
         assert (rs.reverse(t2).isEmpty());
 
-//        assert(rs.reverse(t3).isEmpty());
+        assert(rs.reverse(t3).equals(t3));
     }
 }

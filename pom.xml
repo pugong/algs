@@ -11,6 +11,8 @@
     <modules>
         <module>leetCode</module>
         <module>algs</module>
+        <module>euler</module>
+        <module>bloom-filter</module>
     </modules>
 
     <!--<dependencies>-->
